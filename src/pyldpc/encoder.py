@@ -56,7 +56,7 @@ def encode(tG, v, snr, seed=None):
     d = utils.binaryproduct(tG, v)
     x = (-1) ** d
 
-    sigma = 10 ** (- snr / 20)
+    sigma = 10 ** (-snr / 20)
     e = rng.randn(*x.shape) * sigma
 
     y = x + e

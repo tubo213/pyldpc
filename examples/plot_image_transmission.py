@@ -12,20 +12,20 @@ decoding system.
 #
 # License: BSD (3-clause)
 
+from time import time
 
 import numpy as np
-from pyldpc import make_ldpc, ldpc_images
-from pyldpc.utils_img import gray2bin, rgb2bin
 from matplotlib import pyplot as plt
 from PIL import Image
 
-from time import time
+from pyldpc import ldpc_images, make_ldpc
+from pyldpc.utils_img import gray2bin, rgb2bin
 
 ##################################################################
 # Let's see the image we are going to be working with
 eye = Image.open("data/eye.png")
 # convert it to grayscale and keep one channel
-eye = np.asarray(eye.convert('LA'))[:, :, 0]
+eye = np.asarray(eye.convert("LA"))[:, :, 0]
 
 # Convert it to a binary matrix
 eye_bin = gray2bin(eye)
@@ -84,14 +84,21 @@ error_decoded_tiger = abs(tiger - tiger_decoded).mean()
 error_noisy_tiger = abs(tiger_noisy - tiger).mean()
 
 
-titles_eye = ["Original", "Noisy | Err = %.3f %%" % error_noisy_eye,
-              "Decoded | Err = %.3f %%" % error_decoded_eye]
-titles_tiger = ["Original", "Noisy | Err = %.3f %%" % error_noisy_tiger,
-                "Decoded | Err = %.3f %%" % error_decoded_tiger]
+titles_eye = [
+    "Original",
+    "Noisy | Err = %.3f %%" % error_noisy_eye,
+    "Decoded | Err = %.3f %%" % error_decoded_eye,
+]
+titles_tiger = [
+    "Original",
+    "Noisy | Err = %.3f %%" % error_noisy_tiger,
+    "Decoded | Err = %.3f %%" % error_decoded_tiger,
+]
 all_imgs = [[eye, eye_noisy, eye_decoded], [tiger, tiger_noisy, tiger_decoded]]
 f, axes = plt.subplots(2, 3, figsize=(18, 12))
-for ax_row, titles, img_list, cmap in zip(axes, [titles_eye, titles_tiger],
-                                          all_imgs, ["gray", None]):
+for ax_row, titles, img_list, cmap in zip(
+    axes, [titles_eye, titles_tiger], all_imgs, ["gray", None]
+):
     for ax, data, title in zip(ax_row, img_list, titles):
         ax.imshow(data, cmap=cmap)
         ax.set_title(title, fontsize=20)

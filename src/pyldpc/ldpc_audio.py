@@ -1,9 +1,10 @@
-import numpy as np
 import warnings
 
-from .utils_audio import bin2audio
+import numpy as np
+
+from .decoder import decode, get_message
 from .encoder import encode
-from .decoder import get_message, decode
+from .utils_audio import bin2audio
 
 
 def encode_audio(tG, audio_bin, snr, seed=None):
@@ -27,8 +28,10 @@ def encode_audio(tG, audio_bin, snr, seed=None):
     n, k = tG.shape
     length, depth = audio_bin.shape
     if depth != 17:
-        raise ValueError("The last dimension of `audio_bin` must be 17."
-                         "Got %s. See `pyldpc.utils.audio2bin`." % depth)
+        raise ValueError(
+            "The last dimension of `audio_bin` must be 17."
+            "Got %s. See `pyldpc.utils.audio2bin`." % depth
+        )
 
     audio_bin = audio_bin.flatten()
     n_bits_total = audio_bin.size
@@ -84,9 +87,8 @@ def decode_audio(tG, H, codeword, snr, audio_shape, maxiter=1000):
     if systematic:
         decoded = codeword_solution[:k, :]
     else:
-        decoded = np.array([get_message(tG, codeword_solution[:, i])
-                           for i in range(n_blocks)]).T
-    decoded = decoded.flatten()[:np.prod(audio_shape)]
+        decoded = np.array([get_message(tG, codeword_solution[:, i]) for i in range(n_blocks)]).T
+    decoded = decoded.flatten()[: np.prod(audio_shape)]
     decoded = decoded.reshape(*audio_shape)
 
     audio_decoded = bin2audio(decoded)
@@ -104,8 +106,8 @@ def ber_audio(original_audio_bin, decoded_audio_bin):
 
     total_bits = np.prod(original_audio_bin.shape)
 
-    errors_bits = abs(original_audio_bin-decoded_audio_bin).flatten().sum()
+    errors_bits = abs(original_audio_bin - decoded_audio_bin).flatten().sum()
 
     ber = errors_bits / total_bits
 
-    return(ber)
+    return ber

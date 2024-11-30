@@ -24,4 +24,23 @@ dev = [
     "sphinx>=7.1.2",
     "sphinx-gallery>=0.18.0",
     "sphinx-rtd-theme>=3.0.2",
+    "ruff>=0.8.1",
 ]
+
+[tool.ruff.lint]
+fixable = ["ALL"]
+unfixable = []
+select = [
+    "F", # pyflakes
+    "E", # pycodestyle
+    "W", # pycodestyle warnings
+    "I", # isort
+]
+ignore = [
+    "E501", # line too long
+]
+
+[tool.ruff]
+extend-include = ["*.ipynb"]
+exclude = ["docs"]
+line-length = 99

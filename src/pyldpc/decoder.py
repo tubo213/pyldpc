@@ -1,9 +1,11 @@
 """Decoding module."""
-import numpy as np
-import warnings
-from . import utils
 
-from numba import njit, int64, types, float64
+import warnings
+
+import numpy as np
+from numba import float64, int64, njit, types
+
+from . import utils
 
 
 def decode(H, y, snr, maxiter=1000):
@@ -52,8 +54,9 @@ def decode(H, y, snr, maxiter=1000):
 
     Lr = np.zeros(shape=(m, n, n_messages))
     for n_iter in range(maxiter):
-        Lq, Lr, L_posteriori = solver(bits_hist, bits_values, nodes_hist,
-                                      nodes_values, Lc, Lq, Lr, n_iter)
+        Lq, Lr, L_posteriori = solver(
+            bits_hist, bits_values, nodes_hist, nodes_values, Lc, Lq, Lr, n_iter
+        )
         x = np.array(L_posteriori <= 0).astype(int)
         product = utils.incode(H, x)
         if product:
@@ -64,14 +67,23 @@ def decode(H, y, snr, maxiter=1000):
     return x.squeeze()
 
 
-output_type_log2 = types.Tuple((float64[:, :, :], float64[:, :, :],
-                               float64[:, :]))
+output_type_log2 = types.Tuple((float64[:, :, :], float64[:, :, :], float64[:, :]))
 
 
-@njit(output_type_log2(int64[:], int64[:], int64[:], int64[:], float64[:, :],
-                       float64[:, :, :],  float64[:, :, :], int64), cache=True)
-def _logbp_numba(bits_hist, bits_values, nodes_hist, nodes_values, Lc, Lq, Lr,
-                 n_iter):
+@njit(
+    output_type_log2(
+        int64[:],
+        int64[:],
+        int64[:],
+        int64[:],
+        float64[:, :],
+        float64[:, :, :],
+        float64[:, :, :],
+        int64,
+    ),
+    cache=True,
+)
+def _logbp_numba(bits_hist, bits_values, nodes_hist, nodes_values, Lc, Lq, Lr, n_iter):
     """Perform inner ext LogBP solver."""
     m, n, n_messages = Lr.shape
     # step 1 : Horizontal
@@ -81,7 +93,7 @@ def _logbp_numba(bits_hist, bits_values, nodes_hist, nodes_values, Lc, Lq, Lr,
     for i in range(m):
         # ni = bits[i]
         ff = bits_hist[i]
-        ni = bits_values[bits_counter: bits_counter + ff]
+        ni = bits_values[bits_counter : bits_counter + ff]
         bits_counter += ff
         for j in ni:
             nij = ni[:]
@@ -109,7 +121,7 @@ def _logbp_numba(bits_hist, bits_values, nodes_hist, nodes_values, Lc, Lq, Lr,
     for j in range(n):
         # mj = nodes[j]
         ff = nodes_hist[j]
-        mj = nodes_values[nodes_counter: nodes_counter + ff]
+        mj = nodes_values[nodes_counter : nodes_counter + ff]
         nodes_counter += ff
         for i in mj:
             mji = mj[:]
@@ -124,18 +136,27 @@ def _logbp_numba(bits_hist, bits_values, nodes_hist, nodes_values, Lc, Lq, Lr,
     nodes_counter = 0
     for j in range(n):
         ff = nodes_hist[j]
-        mj = nodes_values[nodes_counter: nodes_counter + ff]
+        mj = nodes_values[nodes_counter : nodes_counter + ff]
         nodes_counter += ff
         L_posteriori[j] = Lc[j] + Lr[mj, j].sum(axis=0)
 
     return Lq, Lr, L_posteriori
 
 
-@njit(output_type_log2(int64[:], int64[:, :], int64[:], int64[:, :],
-                       float64[:, :], float64[:, :, :],  float64[:, :, :],
-                       int64), cache=True)
-def _logbp_numba_regular(bits_hist, bits_values, nodes_hist, nodes_values, Lc,
-                         Lq, Lr, n_iter):
+@njit(
+    output_type_log2(
+        int64[:],
+        int64[:, :],
+        int64[:],
+        int64[:, :],
+        float64[:, :],
+        float64[:, :, :],
+        float64[:, :, :],
+        int64,
+    ),
+    cache=True,
+)
+def _logbp_numba_regular(bits_hist, bits_values, nodes_hist, nodes_values, Lc, Lq, Lr, n_iter):
     """Perform inner ext LogBP solver."""
     m, n, n_messages = Lr.shape
     # step 1 : Horizontal
@@ -205,7 +226,8 @@ def get_message(tG, x):
     message[k - 1] = rx[k - 1]
     for i in reversed(range(k - 1)):
         message[i] = rx[i]
-        message[i] -= utils.binaryproduct(rtG[i, list(range(i+1, k))],
-                                          message[list(range(i+1, k))])
+        message[i] -= utils.binaryproduct(
+            rtG[i, list(range(i + 1, k))], message[list(range(i + 1, k))]
+        )
 
     return abs(message)

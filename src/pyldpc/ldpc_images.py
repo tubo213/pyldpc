@@ -1,9 +1,11 @@
-import numpy as np
-from .utils_img import (bin2gray, bin2rgb)
-from .encoder import encode
-from .decoder import get_message, decode
-from .utils import check_random_state
 import warnings
+
+import numpy as np
+
+from .decoder import decode, get_message
+from .encoder import encode
+from .utils import check_random_state
+from .utils_img import bin2gray, bin2rgb
 
 
 def encode_img(tG, img_bin, snr, seed=None):
@@ -28,10 +30,11 @@ def encode_img(tG, img_bin, snr, seed=None):
 
     height, width, depth = img_bin.shape
     if depth not in [8, 24]:
-        raise ValueError("The expected dimension of a binary image is "
-                         "(width, height, 8) for grayscale images or "
-                         "(width, height, 24) for RGB images; got %s"
-                         % list(img_bin.shape))
+        raise ValueError(
+            "The expected dimension of a binary image is "
+            "(width, height, 8) for grayscale images or "
+            "(width, height, 24) for RGB images; got %s" % list(img_bin.shape)
+        )
     img_bin = img_bin.flatten()
     n_bits_total = img_bin.size
     n_blocks = n_bits_total // k
@@ -76,13 +79,15 @@ def decode_img(tG, H, codeword, snr, img_shape, maxiter=100):
 
     depth = img_shape[-1]
     if depth not in [8, 24]:
-        raise ValueError("The expected dimension of a binary image is "
-                         "(width, height, 8) for grayscale images or "
-                         "(width, height, 24) for RGB images; got %s"
-                         % list(img_shape))
+        raise ValueError(
+            "The expected dimension of a binary image is "
+            "(width, height, 8) for grayscale images or "
+            "(width, height, 24) for RGB images; got %s" % list(img_shape)
+        )
     if len(codeword) != n:
-        raise ValueError("The left dimension of `codeword` must be equal to "
-                         "n, the number of columns of H.")
+        raise ValueError(
+            "The left dimension of `codeword` must be equal to " "n, the number of columns of H."
+        )
 
     systematic = True
 
@@ -95,9 +100,8 @@ def decode_img(tG, H, codeword, snr, img_shape, maxiter=100):
     if systematic:
         decoded = codeword_solution[:k, :]
     else:
-        decoded = np.array([get_message(tG, codeword_solution[:, i])
-                           for i in range(n_blocks)]).T
-    decoded = decoded.flatten()[:np.prod(img_shape)]
+        decoded = np.array([get_message(tG, codeword_solution[:, i]) for i in range(n_blocks)]).T
+    decoded = decoded.flatten()[: np.prod(img_shape)]
     decoded = decoded.reshape(*img_shape)
 
     if depth == 8:
@@ -111,7 +115,7 @@ def decode_img(tG, H, codeword, snr, img_shape, maxiter=100):
 def ber_img(original_img_bin, decoded_img_bin):
     """Compute Bit-Error-Rate (BER) by comparing 2 binary images."""
     if not original_img_bin.shape == decoded_img_bin.shape:
-        raise ValueError('Original and decoded images\' shapes don\'t match !')
+        raise ValueError("Original and decoded images' shapes don't match !")
 
     height, width, k = original_img_bin.shape
 
@@ -121,4 +125,4 @@ def ber_img(original_img_bin, decoded_img_bin):
 
     ber = errors_bits / total_bits
 
-    return(ber)
+    return ber

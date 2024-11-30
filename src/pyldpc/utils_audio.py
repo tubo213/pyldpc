@@ -1,6 +1,6 @@
 import numpy as np
 
-from .utils import int2bitarray, bitarray2int
+from .utils import bitarray2int, int2bitarray
 
 
 def audio2bin(audio_array):
@@ -14,7 +14,7 @@ def audio2bin(audio_array):
     length = audio.size
 
     # Translate audio by 2^15 so as to make its dtype unsigned.
-    audio = audio + 2 ** 15
+    audio = audio + 2**15
 
     audio_bin = np.zeros(shape=(length, 17), dtype=int)
     for i in range(length):
@@ -34,6 +34,6 @@ def bin2audio(audio_bin):
 
     # Translate audio by - 2^15 so as to make its dtype signed int16.
 
-    audio = audio - 2 ** 15
+    audio = audio - 2**15
 
     return audio.astype(np.int16)

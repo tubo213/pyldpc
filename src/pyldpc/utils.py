@@ -1,9 +1,12 @@
 """Conversion tools."""
+
 import math
 import numbers
+
 import numpy as np
 import scipy
 from scipy.stats import norm
+
 pi = math.pi
 
 
@@ -11,7 +14,7 @@ def int2bitarray(n, k):
     """Change an array's base from int (base 10) to binary (base 2)."""
     binary_string = bin(n)
     length = len(binary_string)
-    bitarray = np.zeros(k, 'int')
+    bitarray = np.zeros(k, "int")
     for i in range(length - 2):
         bitarray[k - i - 1] = int(binary_string[length - i - 1])
 
@@ -60,8 +63,8 @@ def gaussjordan(X, change=0):
 
     pivot_old = -1
     for j in range(n):
-        filtre_down = A[pivot_old+1:m, j]
-        pivot = np.argmax(filtre_down)+pivot_old+1
+        filtre_down = A[pivot_old + 1 : m, j]
+        pivot = np.argmax(filtre_down) + pivot_old + 1
 
         if A[pivot, j]:
             pivot_old += 1
@@ -77,10 +80,10 @@ def gaussjordan(X, change=0):
             for i in range(m):
                 if i != pivot_old and A[i, j]:
                     if change:
-                        P[i, :] = abs(P[i, :]-P[pivot_old, :])
-                    A[i, :] = abs(A[i, :]-A[pivot_old, :])
+                        P[i, :] = abs(P[i, :] - P[pivot_old, :])
+                    A[i, :] = abs(A[i, :] - A[pivot_old, :])
 
-        if pivot_old == m-1:
+        if pivot_old == m - 1:
             break
 
     if change:
@@ -113,7 +116,7 @@ def fm1(y, sigma):
 
 def _bitsandnodes(H):
     """Return bits and nodes of a parity-check matrix H."""
-    if type(H) != scipy.sparse.csr_matrix:
+    if not isinstance(H, scipy.sparse.csr_matrix):
         bits_indices, bits = np.where(H)
         nodes_indices, nodes = np.where(H.T)
     else:
@@ -127,14 +130,14 @@ def _bitsandnodes(H):
 
 def bits2i(H, i):
     """Compute list of variables (bits) connected to Parity node i."""
-    if type(H) != scipy.sparse.csr_matrix:
+    if not isinstance(H, scipy.sparse.csr_matrix):
         m, n = H.shape
         return list(np.where(H[i])[0])
 
     indj = H.indptr
     indi = H.indices
 
-    return [indi[a] for a in range(indj[i], indj[i+1])]
+    return [indi[a] for a in range(indj[i], indj[i + 1])]
 
 
 def nodes2j(H, j):
@@ -160,7 +163,7 @@ def incode(H, x):
 
 def gausselimination(A, b):
     """Solve linear system in Z/2Z via Gauss Gauss elimination."""
-    if type(A) == scipy.sparse.csr_matrix:
+    if isinstance(A, scipy.sparse.csr_matrix):
         A = A.toarray().copy()
     else:
         A = A.copy()
@@ -182,10 +185,10 @@ def gausselimination(A, b):
             b[j] = b[pivot]
             b[pivot] = aux
 
-        for i in range(j+1, n):
+        for i in range(j + 1, n):
             if A[i, j]:
-                A[i, :] = abs(A[i, :]-A[j, :])
-                b[i] = abs(b[i]-b[j])
+                A[i, :] = abs(A[i, :] - A[j, :])
+                b[i] = abs(b[i] - b[j])
 
     return A, b
 
@@ -206,5 +209,4 @@ def check_random_state(seed):
         return np.random.RandomState(seed)
     if isinstance(seed, np.random.RandomState):
         return seed
-    raise ValueError('%r cannot be used to seed a numpy.random.RandomState'
-                     ' instance' % seed)
+    raise ValueError("%r cannot be used to seed a numpy.random.RandomState" " instance" % seed)

@@ -1,23 +1,21 @@
-import numpy as np
-
-from pyldpc import (make_ldpc, binaryproduct, ldpc_audio)
-from pyldpc.utils_audio import audio2bin
-import pytest
 from itertools import product
+
+import numpy as np
+import pytest
+
+from pyldpc import binaryproduct, ldpc_audio, make_ldpc
+from pyldpc.utils_audio import audio2bin
 
 
 @pytest.mark.filterwarnings("ignore: In LDPC applications, using systematic")
-@pytest.mark.parametrize("systematic, sparse",
-                         product([True, False], [False, True]))
+@pytest.mark.parametrize("systematic, sparse", product([True, False], [False, True]))
 def test_audio(systematic, sparse):
-
     n = 48
     d_v = 2
     d_c = 3
     seed = 0
     rnd = np.random.RandomState(seed)
-    H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic,
-                     sparse=sparse)
+    H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic, sparse=sparse)
     assert not binaryproduct(H, G).any()
 
     n, k = G.shape
