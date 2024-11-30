@@ -41,5 +41,6 @@ ignore = [
 ]
 
 [tool.ruff]
-extend-include = ["*.ipynb", "docs/*"]
+extend-include = ["*.ipynb"]
+exclude = ["docs"]
 line-length = 99
