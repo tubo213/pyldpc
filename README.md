@@ -20,18 +20,8 @@ An example of coding-decoding is available at [the pyldpc webpage](https://hicha
 
 ## Installation
 
-If you already have a working Python environment (Anaconda for e.g):
-
 ```bash
-pip install --upgrade pyldpc
-```
-
-Otherwise, we recommend creating this minimal [conda environment](https://raw.githubusercontent.com/hichamjanati/pyldpc/master/environment.yml):
-
-```bash
-conda env create --file environment.yml
-conda activate pyldpc-env
-pip install -U pyldpc
+pip install git+https://github.com/tubo213/pyldpc.git
 ```
 
 ## Example
