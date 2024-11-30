@@ -10,10 +10,9 @@ up computations.
 from time import time
 
 import numpy as np
-
 from matplotlib import pyplot as plt
 
-from pyldpc import make_ldpc, decode, encode
+from pyldpc import decode, encode, make_ldpc
 
 n = 100
 d_v = 2
@@ -61,8 +60,7 @@ for pp in n_messages:
 
 
 plt.figure()
-plt.plot(n_messages, times_sequential, color="indianred", lw=2,
-         label="Sequential")
+plt.plot(n_messages, times_sequential, color="indianred", lw=2, label="Sequential")
 plt.plot(n_messages, times_parallel, color="gold", lw=2, label="Parallel")
 plt.ylabel("Time (s)")
 plt.xlabel("# messages")

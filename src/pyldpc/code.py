@@ -1,6 +1,8 @@
 """Coding module."""
+
 import numpy as np
 from scipy.sparse import csr_matrix
+
 from . import utils
 
 
@@ -44,13 +46,13 @@ def parity_check_matrix(n_code, d_v, d_c, seed=None):
     # Filling the first block with consecutive ones in each row of the block
 
     for i in range(block_size):
-        for j in range(i * d_c, (i+1) * d_c):
+        for j in range(i * d_c, (i + 1) * d_c):
             block[i, j] = 1
     H[:block_size] = block
 
     # reate remaining blocks by permutations of the first block's columns:
     for i in range(1, d_v):
-        H[i * block_size: (i + 1) * block_size] = rng.permutation(block.T).T
+        H[i * block_size : (i + 1) * block_size] = rng.permutation(block.T).T
     H = H.astype(int)
     return H
 
@@ -70,7 +72,7 @@ def coding_matrix(H, sparse=True):
     G.T: array (n_bits, n_code). Transposed coding matrix.
 
     """
-    if type(H) == csr_matrix:
+    if isinstance(H, csr_matrix):
         H = H.toarray()
     n_equations, n_code = H.shape
 
@@ -85,7 +87,7 @@ def coding_matrix(H, sparse=True):
     n_bits = n_code - Href_diag.sum()
 
     Y = np.zeros(shape=(n_code, n_bits)).astype(int)
-    Y[n_code - n_bits:, :] = np.identity(n_bits)
+    Y[n_code - n_bits :, :] = np.identity(n_bits)
 
     if sparse:
         Q = csr_matrix(Q)
@@ -127,15 +129,15 @@ def coding_matrix_systematic(H, sparse=True):
 
     # After this loop, Hrowreduced will have the form H_ss : | I_(n-k)  A |
 
-    while(True):
-        zeros = [i for i in range(min(n_equations, n_code))
-                 if not Hrowreduced[i, i]]
+    while True:
+        zeros = [i for i in range(min(n_equations, n_code)) if not Hrowreduced[i, i]]
         if len(zeros):
             indice_colonne_a = min(zeros)
         else:
             break
-        list_ones = [j for j in range(indice_colonne_a + 1, n_code)
-                     if Hrowreduced[indice_colonne_a, j]]
+        list_ones = [
+            j for j in range(indice_colonne_a + 1, n_code) if Hrowreduced[indice_colonne_a, j]
+        ]
         if len(list_ones):
             indice_colonne_b = min(list_ones)
         else:
@@ -154,7 +156,7 @@ def coding_matrix_systematic(H, sparse=True):
 
     P1 = P1.T
     identity = list(range(n_code))
-    sigma = identity[n_code - n_bits:] + identity[:n_code - n_bits]
+    sigma = identity[n_code - n_bits :] + identity[: n_code - n_bits]
 
     P2 = np.zeros(shape=(n_code, n_code), dtype=int)
     P2[identity, sigma] = np.ones(n_code)
@@ -173,8 +175,7 @@ def coding_matrix_systematic(H, sparse=True):
 
     G_systematic = np.zeros((n_bits, n_code), dtype=int)
     G_systematic[:, :n_bits] = np.identity(n_bits)
-    G_systematic[:, n_bits:] = \
-        (Hrowreduced[:n_code - n_bits, n_code - n_bits:]).T
+    G_systematic[:, n_bits:] = (Hrowreduced[: n_code - n_bits, n_code - n_bits :]).T
 
     return H_new, G_systematic.T
 

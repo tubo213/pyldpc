@@ -1,21 +1,19 @@
-import numpy as np
-
-from pyldpc import (make_ldpc, binaryproduct, encode_random_message, decode,
-                    get_message, encode)
-import pytest
 from itertools import product
 
+import numpy as np
+import pytest
 
-@pytest.mark.parametrize("systematic, sparse",
-                         product([False, True], [False, True]))
+from pyldpc import binaryproduct, decode, encode, encode_random_message, get_message, make_ldpc
+
+
+@pytest.mark.parametrize("systematic, sparse", product([False, True], [False, True]))
 def test_decoding_random(systematic, sparse):
     n = 15
     d_v = 4
     d_c = 5
     seed = 0
 
-    H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic,
-                     sparse=sparse)
+    H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic, sparse=sparse)
     assert not binaryproduct(H, G).any()
     n, k = G.shape
     snr = 10
@@ -28,16 +26,14 @@ def test_decoding_random(systematic, sparse):
     assert abs(v - x).sum() == 0
 
 
-@pytest.mark.parametrize("systematic, sparse",
-                         product([False, True], [False, True]))
+@pytest.mark.parametrize("systematic, sparse", product([False, True], [False, True]))
 def test_decoding(systematic, sparse):
     n = 15
     d_v = 4
     d_c = 5
     seed = 0
 
-    H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic,
-                     sparse=sparse)
+    H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic, sparse=sparse)
     assert not binaryproduct(H, G).any()
 
     n, k = G.shape
@@ -52,16 +48,14 @@ def test_decoding(systematic, sparse):
     assert abs(v - x).sum() == 0
 
 
-@pytest.mark.parametrize("systematic, sparse",
-                         product([False, True], [False, True]))
+@pytest.mark.parametrize("systematic, sparse", product([False, True], [False, True]))
 def test_decoding_did_not_converge(systematic, sparse):
     n = 15
     d_v = 4
     d_c = 5
     seed = 0
 
-    H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic,
-                     sparse=sparse)
+    H, G = make_ldpc(n, d_v, d_c, seed=seed, systematic=systematic, sparse=sparse)
     assert not binaryproduct(H, G).any()
 
     n, k = G.shape

@@ -7,10 +7,10 @@ This example shows a simulation of the transmission of a binary message
 through a gaussian white noise channel with an LDPC coding and decoding system.
 """
 
-
 import numpy as np
-from pyldpc import make_ldpc, decode, get_message, encode
 from matplotlib import pyplot as plt
+
+from pyldpc import decode, encode, get_message, make_ldpc
 
 n = 30
 d_v = 2
@@ -40,7 +40,7 @@ V = np.tile(v, (n_trials, 1)).T  # stack v in columns
 for snr in snrs:
     y = encode(G, V, snr, seed=seed)
     D = decode(H, y, snr)
-    error = 0.
+    error = 0.0
     for i in range(n_trials):
         x = get_message(G, D[:, i])
         error += abs(v - x).sum() / (k * n_trials)

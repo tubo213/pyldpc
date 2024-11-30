@@ -1,16 +1,17 @@
+from time import time
+
 import numpy as np
-from pyldpc import make_ldpc, ldpc_images
-from pyldpc.utils_img import gray2bin, rgb2bin
 from matplotlib import pyplot as plt
 from PIL import Image
 
-from time import time
+from pyldpc import ldpc_images, make_ldpc
+from pyldpc.utils_img import gray2bin
 
 ##################################################################
 # Let's see the image we are going to be working with
 tree = Image.open("data/tree.png")
 # convert it to grayscale and keep one channel
-tree = np.asarray(tree.convert('LA'))[:, :, 0]
+tree = np.asarray(tree.convert("LA"))[:, :, 0]
 
 # Convert it to a binary matrix
 tree_bin = gray2bin(tree)
@@ -45,9 +46,9 @@ print("tree | Decoding time: ", t)
 error_decoded_tree = abs(tree - tree_decoded).mean()
 error_noisy_tree = abs(tree_noisy - tree).mean()
 
-plt.imshow(tree,'gray')
+plt.imshow(tree, "gray")
 plt.show()
-plt.imshow(tree_noisy,'gray')
+plt.imshow(tree_noisy, "gray")
 plt.show()
-plt.imshow(tree_decoded,'gray')
+plt.imshow(tree_decoded, "gray")
 plt.show()
