@@ -11,9 +11,6 @@ jobs:
       - name: Move to the project directory
         run: cd $GITHUB_WORKSPACE
 
-      - name: Set up Python
-        run: uv python install
-
       - name: Install dependencies
         run: uv sync --all-extras --dev
 
