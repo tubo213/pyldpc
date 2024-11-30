@@ -1,0 +1,15 @@
+name: test
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install uv and setup(latest version)
+        uses: astral-sh/setup-uv@v4
+      - name: Install dependencies
+        run: uv sync --frozen
+      - name: Lint
+        run: uv run ruff check --diff
+      - name: Pytest
+        run: uv run pytest
